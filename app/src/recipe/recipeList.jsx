@@ -29,7 +29,7 @@ export default class Antdes extends React.Component {
       // 默认排序
       sortedInfo: {
         order: 'descend',
-        //在这尝试排序
+        //在这尝试排序ss
         columnKey: 'updatedAt',
       },
     }
