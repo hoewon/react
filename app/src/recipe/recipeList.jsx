@@ -29,6 +29,7 @@ export default class Antdes extends React.Component {
       // 默认排序
       sortedInfo: {
         order: 'descend',
+        //在这尝试排序
         columnKey: 'updatedAt',
       },
     }
@@ -72,7 +73,7 @@ export default class Antdes extends React.Component {
           //第一次创建时间 固定 不会被改变
           i.createdAt = u.time(i.createdAt);
         });
-        //克隆r2
+        //克隆r2 固定用法 解析av数据
         let r3 = JSON.parse(JSON.stringify(r2));
         let pagination = this.state.pagination;
         // console.log('recipe列表', r3);
@@ -97,7 +98,6 @@ export default class Antdes extends React.Component {
     this.setState({
       sortedInfo: {
         order: sorter.order,
-        field:sorter.field,
         columnKey: sorter.field,
       },
     });
@@ -112,7 +112,6 @@ export default class Antdes extends React.Component {
     this.fetch({
       limit: pagination.pageSize,
       page: pagination.current,
-      sortField: sorter.field,
       sortOrder: sorter.order,
       ...filters,
     });
