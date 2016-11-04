@@ -26,7 +26,8 @@ export default class Antdes extends React.Component {
       data: [],
       pagination: {size:'large'},
       loading: false,
-      // 默认排序
+      // 默认排序,
+      filteredInfo:null,
       sortedInfo: {
         order: 'descend',
         //在这尝试排序ss
@@ -58,6 +59,8 @@ export default class Antdes extends React.Component {
       // 想在查询的同时获取关联对象的属性则一定要使用 `include` 接口用来指定返回的 `key`
       q.include('image');
       q.include('video');
+      //q.include('createdAt');
+      //q.include('updateAt');
       //排序 按照
       if(params.sortOrder === 'descend'){
         q.descending(params.sortField);
@@ -67,11 +70,21 @@ export default class Antdes extends React.Component {
 
       q.find().then((r2)=> {
         //批量操作
+        console.log(r2);
+        //console.log(r2.publishedAt+'b');
+        //console.log(r2.updatedAt+'c');
         r2.map((i)=> {
+          console.log(i);
           //最近更新时间
-          i.updatedAt = u.time(i.updatedAt, 'now');
+          i.updatedAt = u.time(i.updatedAt,'now');
+          //
           //第一次创建时间 固定 不会被改变
           i.createdAt = u.time(i.createdAt);
+          console.log(i.createdAt);
+
+          console.log(i.publishedAt);
+
+          i.publishedAt = u.time(i.publishedAt);
         });
         //克隆r2 固定用法 解析av数据
         let r3 = JSON.parse(JSON.stringify(r2));
@@ -96,6 +109,7 @@ export default class Antdes extends React.Component {
   handleTableChange = (pagination, filters, sorter) =>{
 
     this.setState({
+      filteredInfo: filters,
       sortedInfo: {
         order: sorter.order,
         columnKey: sorter.field,
@@ -104,7 +118,6 @@ export default class Antdes extends React.Component {
 
     const pager = this.state.pagination;
     pager.current = pagination.current;
-
     this.setState({
       pagination: pager,
     });
@@ -112,6 +125,7 @@ export default class Antdes extends React.Component {
     this.fetch({
       limit: pagination.pageSize,
       page: pagination.current,
+      sortField: sorter.field,
       sortOrder: sorter.order,
       ...filters,
     });
@@ -119,8 +133,10 @@ export default class Antdes extends React.Component {
 
   render() {
 
-    let { sortedInfo } = this.state;
+    let { sortedInfo/*,filteredInfo*/ } = this.state;
     sortedInfo = sortedInfo || {};
+    //
+    //filteredInfo = filteredInfo || {};
     /*定义表格列*/
     const columns = [
       {
@@ -130,6 +146,7 @@ export default class Antdes extends React.Component {
         // render: title => `${title.first} ${title.last}`,
         width: '40%',
         key: 'objectId',
+        //filteredValue: filteredInfo.title,
         sortOrder: sortedInfo.columnKey === 'title' && sortedInfo.order,
         render: (t, r)  => <a href={r.image?r.image.url:'#'} target='_blank'>{t}</a>,
       },
@@ -137,56 +154,85 @@ export default class Antdes extends React.Component {
         width: '10%',
         title: '作品序号',
         dataIndex: 'sn',
-        //默认排序
         key: 'indexForSort',
         sorter: true,
+        //
+        //filteredValue: filteredInfo.sn,
         sortOrder: sortedInfo.columnKey === 'updatedAt' && sortedInfo.order,
         render: (t, r)  => <a href={r.video?r.video.url:'#'} target='_blank'>{t}</a>,
       },
+        //
+      {
+        width: '10%',
+        title: '视频地址',
+        dataIndex: 'address',
+        render: (t, r)  => <a href={r.video?r.video.url:'#'} target='_blank'>{r.video?r.video.url:'#'}</a>,
+
+
+      },
+        //
       {
         width: '5%',
         title: '更新时间',
         dataIndex: 'updatedAt',
         sorter: true,
+        //
+        //filteredValue: filteredInfo.updateAt,
         sortOrder: sortedInfo.columnKey === 'updatedAt' && sortedInfo.order,
       },
       {
-        width: '10%',
+
+        width: '5%',
         title: '创建日期',
         dataIndex: 'createdAt',
         //key: 'indexForSort',
+        //
+        //filteredValue: filteredInfo.createdAt,
         sorter: true,
         sortOrder: sortedInfo.columnKey === 'createdAt' && sortedInfo.order,
+        render:(t,r) =><div>{r.createdAt.substr(0,10)}</div>,
+      },
+      {
+        width: '10%',
+        title: '发布日期',
+        dataIndex: 'publishedAt',
+        //key: 'indexForSort',
+        //
+        //filteredValue: filteredInfo.createdAt,
+        sorter: true,
+        sortOrder: sortedInfo.columnKey === 'publishedAt' && sortedInfo.order,
       },
       {
         width: '5%',
         title: '操作',
         dataIndex: 'handle',
         render: (t, r, i) => (
-          <Tooltip title="编辑"><Link to={"/recipe/edit/"+(r.objectId)}>
-        <i className="fa fa-pencil"/></Link>
-        </Tooltip>
+            <Tooltip title="编辑"><Link to={"/recipe/edit/"+(r.objectId)}>
+              <i className="fa fa-pencil"/>?</Link>
+            </Tooltip>
         )
       }];
 
     return (
-      <div id="wrap">
-        <Title titleName="标签" onMouseOver={this.displayAlert}/>
-        {/* <Button onClick={this.reload}>查询</Button>
-        <Header />*/}
-        <div id="table">
-          <Table
-            columns={columns}
-            rowKey='objectId'
-            size="middle"
-            rowKey={record => record.registered}
-            dataSource={this.state.data}
-            pagination={this.state.pagination}
-            loading={this.state.loading}
-            onChange={this.handleTableChange}
-          />
+        <div id="wrap">
+          <Title titleName="标签" onMouseOver={this.displayAlert}/>
+          {/*<Button onClick={this.reload}>查询</Button>
+          <Header /> */}
+          <div id="table">
+            <Table
+                columns={columns}
+                rowKey='objectId'
+                size="middle"
+                rowKey={record => record.registered}
+                dataSource={this.state.data}
+                pagination={this.state.pagination}
+                loading={this.state.loading}
+                onChange={this.handleTableChange}
+            />
+
+          </div>
         </div>
-      </div>
     )
   }
+
 }
