@@ -32,6 +32,7 @@ export default class Antdes extends React.Component {
         order: 'descend',
         //在这尝试排序ss
         columnKey: 'updatedAt',
+        //columnKey: 'publishedAt'
       },
     }
   }
@@ -70,24 +71,26 @@ export default class Antdes extends React.Component {
 
       q.find().then((r2)=> {
         //批量操作
-        console.log(r2);
         //console.log(r2.publishedAt+'b');
         //console.log(r2.updatedAt+'c');
-        r2.map((i)=> {
+
+        //克隆r3 固定用法 解析av数据
+        let r3 = JSON.parse(JSON.stringify(r2));
+        console.log(r3);
+
+        r3.map((i)=> {
           console.log(i);
           //最近更新时间
           i.updatedAt = u.time(i.updatedAt,'now');
           //
           //第一次创建时间 固定 不会被改变
           i.createdAt = u.time(i.createdAt);
-          console.log(i.createdAt);
+          //console.log(i.createdAt);
+          //
+          //console.log(i.publishedAt);
 
-          console.log(i.publishedAt);
-
-          i.publishedAt = u.time(i.publishedAt);
+          i.publishedAt = u.time(i.publishedAt.iso);
         });
-        //克隆r2 固定用法 解析av数据
-        let r3 = JSON.parse(JSON.stringify(r2));
         let pagination = this.state.pagination;
         // console.log('recipe列表', r3);
 
