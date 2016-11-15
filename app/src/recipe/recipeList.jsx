@@ -1,4 +1,5 @@
 import React from 'react';
+//import { Router} from 'react-router'
 import {Table, Icon, Tooltip, Button, message} from 'antd';
 
 import { Link } from 'react-router';
@@ -16,8 +17,8 @@ const u = require('../utils/utils');
 import './list.less';
 // 引入组件
 import Title from '../components/title.jsx';
-//import Header from './components/header.jsx';
-//import BtnForm from './components/modalForm.jsx';
+import Header from './components/header.jsx';
+import BtnForm from './components/modalForm.jsx';
 
 export default class Antdes extends React.Component {
   constructor(props) {
@@ -164,7 +165,7 @@ export default class Antdes extends React.Component {
         sortOrder: sortedInfo.columnKey === 'updatedAt' && sortedInfo.order,
         render: (t, r)  => <a href={r.video?r.video.url:'#'} target='_blank'>{t}</a>,
       },
-        //
+      //
       {
         width: '10%',
         title: '视频地址',
@@ -173,7 +174,7 @@ export default class Antdes extends React.Component {
 
 
       },
-        //
+      //
       {
         width: '5%',
         title: '更新时间',
@@ -219,14 +220,14 @@ export default class Antdes extends React.Component {
     return (
         <div id="wrap">
           <Title titleName="标签" onMouseOver={this.displayAlert}/>
-          {/*<Button onClick={this.reload}>查询</Button>
-          <Header /> */}
+         <Button onClick={this.reload}>查询</Button>
+          <Header />
           <div id="table">
             <Table
                 columns={columns}
                 rowKey='objectId'
                 size="middle"
-                rowKey={record => record.registered}
+                rowKey={record => record.objectId}
                 dataSource={this.state.data}
                 pagination={this.state.pagination}
                 loading={this.state.loading}

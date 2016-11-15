@@ -9,6 +9,7 @@ import Welcome from './welcome/welcome.jsx';
 //import Profile from './profile/profile.jsx';
 import Recipe from './recipe/recipeList.jsx';
 //import RecipeEdit from './recipe/recipeEdit.jsx';
+import RecipeEdit from'./recipe/recipeTest.jsx';
 //import Category from './category/categoryList.jsx';
 import Campaign from './campaign/campaign.jsx';
 import Edit from './edit/edit.jsx';
@@ -52,8 +53,8 @@ ReactDOM.render(
             <IndexRoute component={Welcome}/>
             { /*<Route path="profile" component={Profile} /> */}
             <Route path="recipe" component={Recipe}/>
-            {/*  <Route path="recipe/edit/:rowId" component={RecipeEdit}/>
-            <Route path="category" component={Category}/>
+           <Route path="recipe/edit/:rowId" component={RecipeEdit}/>
+            {/* <Route path="category" component={Category}/>
             <Route path="cook" component={Cook}/>*/}
             <Route path="campaign" component={Campaign} />
             <Route path="counter" component={Counter} />
