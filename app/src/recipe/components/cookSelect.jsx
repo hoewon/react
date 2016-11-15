@@ -23,7 +23,7 @@ class toolSelect extends React.Component {
     this.state = {
       data: this.props.data,
       value: '',
-      focus: false,
+      focus: false
     }
   }
 
@@ -51,13 +51,15 @@ class toolSelect extends React.Component {
         notFoundContent="输入名称查找"
         onSearch={this.handleSearch}
         // onChange={this.handleChange}
-        {...getFieldProps('cook.objectId', {
+        {...getFieldProps('cook.objectId',
+            {
           rules: [{
             required: true,
             // whitespace: true,
-            message: '请选择作者！',
-          }],
-        },)}
+            message: '请选择作者！'
+          }]
+        })
+            }
       >
         {options}
       </Select>

@@ -9,7 +9,7 @@ import Welcome from './welcome/welcome.jsx';
 //import Profile from './profile/profile.jsx';
 import Recipe from './recipe/recipeList.jsx';
 //import RecipeEdit from './recipe/recipeEdit.jsx';
-import RecipeEdit from'./recipe/recipeTest.jsx';
+import RecipeEdit from'./recipe/recipeEdit.jsx';
 //import Category from './category/categoryList.jsx';
 import Campaign from './campaign/campaign.jsx';
 import Edit from './edit/edit.jsx';

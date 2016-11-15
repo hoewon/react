@@ -92,9 +92,9 @@ class toolSelect extends React.Component {
           rules: [{
             required: true,
             whitespace: true,
-            message: '你好友的名字捏！',
-          }],
-        },)}
+            message: '你好友的名字捏！'
+          }]
+        })}
 
       >
         {options}
