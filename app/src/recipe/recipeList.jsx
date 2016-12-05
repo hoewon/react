@@ -89,8 +89,9 @@ export default class Antdes extends React.Component {
           //console.log(i.createdAt);
           //
           //console.log(i.publishedAt);
-
-          i.publishedAt = u.time(i.publishedAt.iso);
+          //console.log('lalalalalalwhshdc圣诞节快撒',i.publishedAt);
+          //console.log(i.publishedAt.iso)
+          i.publishedAt = u.time(i.publishedAt);
         });
         let pagination = this.state.pagination;
         // console.log('recipe列表', r3);
@@ -212,7 +213,7 @@ export default class Antdes extends React.Component {
         dataIndex: 'handle',
         render: (t, r, i) => (
             <Tooltip title="编辑"><Link to={"/recipe/edit/"+(r.objectId)}>
-              <i className="fa fa-pencil"/>?</Link>
+              <i className="fa fa-pencil"/></Link>
             </Tooltip>
         )
       }];

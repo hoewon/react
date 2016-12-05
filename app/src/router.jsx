@@ -8,9 +8,8 @@ import Init from './main.jsx';
 import Welcome from './welcome/welcome.jsx';
 //import Profile from './profile/profile.jsx';
 import Recipe from './recipe/recipeList.jsx';
-//import RecipeEdit from './recipe/recipeEdit.jsx';
 import RecipeEdit from'./recipe/recipeEdit.jsx';
-//import Category from './category/categoryList.jsx';
+import Category from './category/categoryList.jsx';
 import Campaign from './campaign/campaign.jsx';
 import Edit from './edit/edit.jsx';
 import Counter from './counter/counter.jsx';
@@ -18,7 +17,7 @@ import Charts from './charts/charts.jsx';
 import Last from './last/last.jsx';
 import NotFoundPage from './nofind/nofind.jsx';
 import Login from './login/login.jsx';
-//import Cook from './cook/cookList.jsx';
+import Cook from './cook/cookList.jsx';
 
 // 引入垫片兼容IE
 require('es5-shim');
@@ -54,8 +53,8 @@ ReactDOM.render(
             { /*<Route path="profile" component={Profile} /> */}
             <Route path="recipe" component={Recipe}/>
            <Route path="recipe/edit/:rowId" component={RecipeEdit}/>
-            {/* <Route path="category" component={Category}/>
-            <Route path="cook" component={Cook}/>*/}
+           <Route path="category" component={Category}/>
+            <Route path="cook" component={Cook}/>
             <Route path="campaign" component={Campaign} />
             <Route path="counter" component={Counter} />
             <Route path="charts" component={Charts} />
