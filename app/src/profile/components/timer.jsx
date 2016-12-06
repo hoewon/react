@@ -15,12 +15,12 @@ export default class Timer extends React.Component {
 
     // 组件渲染后开始循环执行tick函数
     componentDidMount() {
-        this.interval = setInterval(this.tick, 1000);
+        this.interval = setInterval(this.tick, 1000);  
     }
 
     // 组件将要死亡时清除计时器，不清除也可以
     componentWillUnmount() {
-        clearInterval(this.interval);
+        clearInterval(this.interval);  
     }
     render() {
         const timerStyle = {
@@ -28,8 +28,7 @@ export default class Timer extends React.Component {
             fontWeight: 'bold'
         }
         return (
-            <div id="timer" className="animated bounceInLeft">
-                This page has been opened {'for'}: <span style={timerStyle}>{this.state.timer}</span> seconds.</div>
+            <div id="timer" className="animated bounceInLeft">This page has been opened {'for'}: <span style={timerStyle}>{this.state.timer}</span> seconds.</div>
         )
     }
 }

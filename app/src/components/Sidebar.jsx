@@ -40,22 +40,22 @@ export default class Sidebar extends React.Component {
                     mode="inline">
                     <Menu.Item key="1">                    
                         <IndexLink to="/"><span><Icon type="home" /><span>欢迎页</span></span></IndexLink>
-                    </Menu.Item>    
-                    <SubMenu key="sub2" title={<span><Icon type="appstore-o" /><span>导航一</span></span>}>
-                        <Menu.Item key="2"><Link to="/profile">小应用</Link></Menu.Item>
+                    </Menu.Item>
+                    <SubMenu key="sub2" title={<span><Icon type="video-camera" /><span>视频</span></span>}>
+                        <Menu.Item key="21"><Link to="/recipe">列表</Link></Menu.Item>
+                        <Menu.Item key="22"><Link to="/recipe/edit/add">新增</Link></Menu.Item>
                     </SubMenu>
-                    <SubMenu key="sub3" title={<span><Icon type="bars" /><span>导航二</span></span>}>
-                        <Menu.Item key="3"><Link to="/campaign">广告系列</Link></Menu.Item>
+                    <SubMenu key="sub3" title={<span><Icon type="tags-o" /><span>标签</span></span>}>
+                        <Menu.Item key="31"><Link to="/category">列表</Link></Menu.Item>
                     </SubMenu>
-                    <SubMenu key="sub4" title={<span><Icon type="bar-chart" /><span>导航三</span></span>}>
-                        <Menu.Item key="4"><Link to="/counter">Reflux起步</Link></Menu.Item>
-                        <Menu.Item key="5"><Link to="/charts">施工中</Link></Menu.Item>
+                    <SubMenu key="sub4" title={<span><Icon type="user" /><span>用户</span></span>}>
+                        <Menu.Item key="41"><Link to="/cook">列表</Link></Menu.Item>
                     </SubMenu>
                     <Menu.Item key="6">
                         <Link to="/last"><span><Icon type="mail" /><span>结尾页</span></span></Link>
                     </Menu.Item>
                 </Menu>
-                <div id="copyright">Copyright © 白延云</div>                    
+                <div id="copyright">AAA</div>
             </div>                
         )
     }
