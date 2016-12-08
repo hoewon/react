@@ -23,8 +23,10 @@ function time(date, type) {
   }
   return result;
 };
+function   formatDate(d){
 
-
+  return  d.getFullYear()+"-"+((d.getMonth()+1)<10?"0":"")+(d.getMonth()+1)+"-"+(d.getDate()<10?"0":"")+d.getDate()+" "+ (d.getHours()+2<10?"0":"")+(d.getHours()+2)+":"+(d.getMinutes()<10?"0":"")+d.getMinutes()+":"+ (d.getSeconds()<10?"0":"")+d.getSeconds();
+};
 
 function transformToSimple(object, prefix, newObject) {
   if (object) {
@@ -93,7 +95,8 @@ function transformSimpleToNested(object) {
 module.exports = {
   n2s: transformNestedToSimple,
   s2n: transformSimpleToNested,
-  time:time
+  time:time,
+  formatDate: formatDate
 }
 
 // exports.time = time;

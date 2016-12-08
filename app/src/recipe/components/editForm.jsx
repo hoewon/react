@@ -13,7 +13,11 @@ import ToolSelect from './toolSelect.jsx';
 import CookSelect from './cookSelect.jsx';
 
 const u = require('../../utils/utils');
-
+//拖拽排序组件
+//import React from 'react';
+var Sortable = require('react-anything-sortable');
+import { SortableContainer } from 'react-anything-sortable';
+//
 import './editForm.less';
 
 function updateTool(r, c) {
@@ -52,6 +56,7 @@ class Editform extends React.Component {
       cook: []
     }
   }
+
 
   componentDidMount() {
 
@@ -189,11 +194,24 @@ class Editform extends React.Component {
     const {form} = this.props;
     // can use data-binding to get
     let keys = form.getFieldValue('keys');
+    console.log('1111keys',keys);
+    console.log('2222this.uuid',this.uuid);
     keys = keys.concat(this.uuid);
+    console.log('3333',keys);
     // can use data-binding to set
     // important! notify form to detect changes
     form.setFieldsValue({
       keys,
+    });
+  }
+  handleSort=(data)=>{
+    const {form} = this.props;
+    let keys = form.getFieldValue('keys');
+    form.setFieldsValue({
+      keys,
+    });
+    this.setState({
+      result: data.join(' ')
     });
   }
 
@@ -262,10 +280,15 @@ class Editform extends React.Component {
     // var data = [{objectId: getFieldValue('cook.objectId'), username: getFieldValue('cook.username')}]
 
 
+
     // console.log('默认值',data)
     const formItems = getFieldValue('keys').map((k) => {
       return (
-        <Form.Item {...formItemLayout} label={`标签${k}：`} key={k}>
+        //外面来一层拖拽组件
+
+        <Form.Item {...formItemLayout}
+            label={`标签${k}：`} key={k}
+            sortData="{k}">
           <ToolSelect {...this.props} k={k} data={this.state.tools}/>
           <Input
             placeholder="用量"
@@ -286,7 +309,22 @@ class Editform extends React.Component {
             <RadioButton value={false}>暂停中</RadioButton>
           </RadioGroup>
           <Button onClick={() => this.remove(k)}>删除</Button>
+
         </Form.Item>
+
+
+
+      );
+    });
+    const SortableItem =getFieldValue('keys').map((k) =>{
+      console.log('kkkakak',k)
+      return (
+
+        <SortableContainer key={k} sortData="{k}">
+          <div>
+            {formItems}
+          </div>
+        </SortableContainer>
       );
     });
     const form =
@@ -305,6 +343,9 @@ class Editform extends React.Component {
             <CookSelect {...this.props} data={this.state.cook}/>
           </FormItem>
           {formItems}
+          <Sortable onSort={this.handleSort}>
+            {SortableItem}
+          </Sortable>
           <FormItem wrapperCol={{ span: 12, offset: 7 }}>
             <Button onClick={this.add} style={{ marginRight: 8 }}>新增好朋友</Button>
             <Button type="primary" onClick={this.handleSubmit}>确定</Button>&nbsp;&nbsp;&nbsp;

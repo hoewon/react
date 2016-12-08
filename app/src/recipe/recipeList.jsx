@@ -25,6 +25,8 @@ export default class Antdes extends React.Component {
     super(props);
     this.state = {
       data: [],
+      publishedAt:'',
+      a:'',
       pagination: {size:'large'},
       loading: false,
       // 默认排序,
@@ -32,7 +34,7 @@ export default class Antdes extends React.Component {
       sortedInfo: {
         order: 'descend',
         //在这尝试排序ss
-        columnKey: 'updatedAt',
+        columnKey: 'sn',
         //columnKey: 'publishedAt'
       },
     }
@@ -43,6 +45,7 @@ export default class Antdes extends React.Component {
     sortedInfo = sortedInfo || {};
     this.fetch({limit:10,page:1,sortField:sortedInfo.columnKey,sortOrder:sortedInfo.order});
   }
+  url=()=>{}
   //columnKey
   displayAlert = () => {
     console.log('blablabla')
@@ -70,31 +73,91 @@ export default class Antdes extends React.Component {
         q.ascending(params.sortField);
       }
 
+
       q.find().then((r2)=> {
+
         //批量操作
-        //console.log(r2.publishedAt+'b');
         //console.log(r2.updatedAt+'c');
 
-        //克隆r3 固定用法 解析av数据
-        let r3 = JSON.parse(JSON.stringify(r2));
-        console.log(r3);
+        console.log('bbbbbb',r2[1]);
 
+        //克隆r3 固定用法 解析av数据
+        //JSON.parse();JSON.stringify
+
+
+        let r3 = JSON.parse(JSON.stringify(r2));
+        console.log('r3',r3);
+        let aaa=0;
         r3.map((i)=> {
-          console.log(i);
-          //最近更新时间
+          var query = new AV.Query('Route');
+          query.equalTo('uid', i.objectId);
+          query.find().then(function (o) {
+            console.log('i',i);
+            let r4 = JSON.parse(JSON.stringify(o));
+            console.log('r4',r4[0]);
+
+            if(r4[0]==undefined){
+              console.log('空')
+              r4[0]={
+                createdAt:"2016-11-03T03:55:44.232Z",
+                objectId: aaa,
+                type: "recipe",
+                uid: aaa,
+                updatedAt: "2016-11-03T03:55:44.232Z",
+                url: 'http://snaku.tv/'+"#"
+              }
+
+              console.log('赋值',r4[0])
+            }else{
+
+              r4[0].url='http://snaku.tv/'+r4[0].url;
+              console.log('有')
+            }
+            aaa++;
+
+             let www = Object.assign(i,r4[0]);
+            console.log('www',www);
+            //最近更新时间
+
+
+          })
           i.updatedAt = u.time(i.updatedAt,'now');
-          //
+          i.thistime = u.formatDate(new Date());
+          //i.url = priorityEqualsZeroTodos.url;
+          //console.log('i.thistime',i.thistime)
           //第一次创建时间 固定 不会被改变
           i.createdAt = u.time(i.createdAt);
-          //console.log(i.createdAt);
-          //
-          //console.log(i.publishedAt);
-          //console.log('lalalalalalwhshdc圣诞节快撒',i.publishedAt);
           //console.log(i.publishedAt.iso)
-          i.publishedAt = u.time(i.publishedAt);
+          i.publishedAt = u.time(i.publishedAt.iso);
+          console.log(i.publishedAt);
+          console.log(i.thistime);
+          if(i.publishedAt<i.thistime){
+            //  发布时间小于当前时间不变色
+            i.timed = true;
+          }else{
+            //发布时间大于当前时间 变红
+            i.timed= false
+          }
+        //  let that = this;
+        //  //console.log('iiiiii',i);
+        //  console.log(i.objectId);
+        //  var query = new AV.Query('Route');
+        //  query.equalTo('uid', i.objectId);
+        //  query.find().then(function (results) {
+        //    let a = that.state.a;
+        //    var p =JSON.parse(JSON.stringify(results));
+        //    //console.log('results',results);
+        //    console.log('lailai',p[0].url);
+        //
+        //  }, function (error) {
+        //  });
+
         });
+
+          console.log('aar3',r3);
         let pagination = this.state.pagination;
         // console.log('recipe列表', r3);
+
 
         pagination.total = count;
 
@@ -149,11 +212,22 @@ export default class Antdes extends React.Component {
         dataIndex: 'title',
         sorter: true,
         // render: title => `${title.first} ${title.last}`,
-        width: '40%',
+        width: '30%',
         key: 'objectId',
         //filteredValue: filteredInfo.title,
         sortOrder: sortedInfo.columnKey === 'title' && sortedInfo.order,
-        render: (t, r)  => <a href={r.image?r.image.url:'#'} target='_blank'>{t}</a>,
+        render: (t, r)  => <a href={r.url? r.url:'#'} target='_blank'>{t}</a>,
+      },
+      {
+        width: '10%',
+        title: 'url',
+        dataIndex: 'url',
+        key: 'index',
+        //sorter: true,
+        //
+        //filteredValue: filteredInfo.sn,
+        sortOrder: sortedInfo.columnKey === 'url' && sortedInfo.order,
+        render: (t, r)  => <a href={r.url? r.url:'#'} target='_blank'>{t}</a>,
       },
       {
         width: '10%',
@@ -163,7 +237,7 @@ export default class Antdes extends React.Component {
         sorter: true,
         //
         //filteredValue: filteredInfo.sn,
-        sortOrder: sortedInfo.columnKey === 'updatedAt' && sortedInfo.order,
+        sortOrder: sortedInfo.columnKey === 'sn' && sortedInfo.order,
         render: (t, r)  => <a href={r.video?r.video.url:'#'} target='_blank'>{t}</a>,
       },
       //
@@ -195,17 +269,18 @@ export default class Antdes extends React.Component {
         //filteredValue: filteredInfo.createdAt,
         sorter: true,
         sortOrder: sortedInfo.columnKey === 'createdAt' && sortedInfo.order,
-        render:(t,r) =><div>{r.createdAt.substr(0,10)}</div>,
+
       },
       {
         width: '10%',
         title: '发布日期',
         dataIndex: 'publishedAt',
-        //key: 'indexForSort',
+
         //
         //filteredValue: filteredInfo.createdAt,
         sorter: true,
         sortOrder: sortedInfo.columnKey === 'publishedAt' && sortedInfo.order,
+        render:(t,r) =><div className={r.timed?'':'red'}  >{r.publishedAt}</div>,
       },
       {
         width: '5%',
@@ -221,10 +296,11 @@ export default class Antdes extends React.Component {
     return (
         <div id="wrap">
           <Title titleName="标签" onMouseOver={this.displayAlert}/>
-         <Button onClick={this.reload}>查询</Button>
+
           <Header />
           <div id="table">
             <Table
+
                 columns={columns}
                 rowKey='objectId'
                 size="middle"
