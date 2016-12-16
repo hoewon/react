@@ -6,7 +6,7 @@ import EditForm from './components/editForm.jsx';
 export default class EditPage extends React.Component {
     constructor(props) {
         super(props);
-        this.state = {}
+        //this.state = {}
     }
 
     render() {
@@ -21,6 +21,7 @@ export default class EditPage extends React.Component {
         };
 
         const id = this.props.params.rowId;
+        console.log('params',this.props.params);
         return (
             <div>
                 <div style={titleStyle}>

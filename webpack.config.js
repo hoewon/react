@@ -41,7 +41,7 @@ module.exports = {
         new webpack.optimize.CommonsChunkPlugin('vendors','js/vendors.js'),
         new ExtractTextPlugin("css/bundle.css"),
         // 如需jquery请解锁
-        // new webpack.ProvidePlugin({ $: "jquery" }),
+         new webpack.ProvidePlugin({ $: "jquery" }),
         new webpack.HotModuleReplacementPlugin(),
         new OpenBrowserPlugin({ url: 'http://localhost:8080/login' })
     ]
