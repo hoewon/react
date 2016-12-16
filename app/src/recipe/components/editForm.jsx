@@ -8,55 +8,16 @@ const RadioButton = Radio.Button;
 import AV from 'leancloud-storage';
 const Recipe = AV.Object.extend('Recipe');
 const Tool = AV.Object.extend('Tool');
-const Tag = AV.Object.extend('Tag');
 
 import ToolSelect from './toolSelect.jsx';
 import CookSelect from './cookSelect.jsx';
 
 const u = require('../../utils/utils');
-//拖拽排序组件
-//import React from 'react';
-import Dragula from 'react-dragula';
-//import '../../../../node_modules/dragula/dragula'
 
-//
-//
-//
-//import HTML5Backend from 'react-dnd-html5-backend';
-//import { DragDropContext } from 'react-dnd';
-////把应用的根组件包装在 DragDropContext 中
-//export default DragDropContext(HTML5Backend)(form);
-///*---------------------------*/
-//// 2把可以拖拽的组件包装在 DragSource 中
-////设置 type
-////设置 spec，让组件可以响应拖拽事件
-////设置 collect，把拖拽过程中需要信息注入组件的 props
-//import { DragSource } from 'react-dnd';
-//// 唯一
-//const type ='aaa';
-////响应拖拽事件
-//const spec={}
-//
-//
-//;
-////返回object注入props
-//function collect(connect, monitor) { ... }
-//export default DragSource(type, spec, collect)(formItems);
-///*---------------------------*/
-//// 3把可以接受拖拽的组件包装在 DropTarget 中
-////设置 type
-////设置 spec，让组件可以响应拖拽事件
-////设置 collect，把拖拽过程中需要信息注入组件的 props
-//import { DropTarget } from 'react-dnd';
-//
-//export default DropTarget(types, spec, collect)(formItems);
-//
 import './editForm.less';
 
 function updateTool(r, c) {
   // r=recipe c=category
-
-
   return new AV.Promise(function (resolve) {
     // 这个c必须存在 c.id .isCat .qty
     var category = AV.Object.createWithoutData('Category', c.objectId);
@@ -81,8 +42,6 @@ function updateTool(r, c) {
   })
 };
 
-
-
 class Editform extends React.Component {
   constructor(props) {
     super(props);
@@ -93,7 +52,6 @@ class Editform extends React.Component {
       cook: []
     }
   }
-
 
   componentDidMount() {
 
@@ -109,21 +67,12 @@ class Editform extends React.Component {
       var q1 = new AV.Query('Recipe');
       q1.include('image');
       q1.include('user');
-      console.log('id',id);
       q1.get(id).then((r1)=> {
-        console.log('r1',r1);
-        var q2 = new AV.Query('Tag');
-        q2.ascending('sort');
+        var q2 = new AV.Query('Tool');
         q2.include('category');
-        console.log('r1',r1.id);
         q2.equalTo('recipe', r1);
         q2.find().then((r2)=> {
-
-         //let r4=JSON.parse(JSON.stringify(r2))
-         // console.log('r4',r4)
-          console.log('r2',r2)
           let r3 = r2.map((o)=> {
-            console.log('o',o);
             return {
               objectId: o.get('category').id,
               title: o.get('category').get('title'),
@@ -137,7 +86,6 @@ class Editform extends React.Component {
           r1.set('tools', u.n2s(r3));
           r1.set('cook', r1.get('user').toJSON());
           r1.set('keys', keys);
-          //r1.set('sort', keys);
 
           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
           // console.log('初始表单内容→→→→→', rz);
@@ -170,7 +118,6 @@ class Editform extends React.Component {
         var q1 = new Recipe();
       } else {
         var q1 = AV.Object.createWithoutData('Recipe', this.props.id);
-        //console.log('qqq',q1);
       }
       var cook = AV.Object.createWithoutData('_User', values.cook.objectId);
       // console.log('提交结果',cook);
@@ -225,7 +172,7 @@ class Editform extends React.Component {
 
   remove = (k) => {
     const {form} = this.props;
-
+    // can use data-binding to get
     let keys = form.getFieldValue('keys');
     keys = keys.filter((key) => {
       return key !== k;
@@ -236,105 +183,6 @@ class Editform extends React.Component {
     });
   }
 
-  sort=(e)=>{
-    const number = $('.key');
-    console.log('key',number.text().trim());
-    //replace
-    const key = number.text().trim().split('标签');
-    console.log('b',key)
-    let a=[]
-    for(let i =1;i<key.length;i++){
-
-        a[i-1]=(key[i]);
-      }
-    let c=[]
-    a.map((b)=>{
-      console.log('b',b);
-
-      c.push(parseInt(b));
-
-    })
-
-    const {form} = this.props;
-    let keys = form.getFieldValue('keys');
-    let tools= form.getFieldValue('tools');
-    form.setFieldsValue({
-      keys:c
-    });
-
-    //this.setState({keys:c})
-    this.props.form.validateFields((errors, values) =>{
-      var tools = u.s2n(values.tools);
-      console.log('values',values);
-      console.log('keys',keys);
-      console.log('tools',tools);
-
-      console.log('c',c);
-      //结果
-      let arr=[];
-      for(let i=0;i<=c.length-1;i++){
-        const a =tools[c[i]];
-       a.sort=i;
-       //let b = Object.assign(a,sort)
-    console.log('a',a);
-
-
-        arr.push(a);
-      }
-      console.log('arr',arr);
-
-
-      const id = this.props.id;
-      let recipe = AV.Object.createWithoutData('recipe', id);
-
-
-      function updateTags (cat){
-        console.log('cat',cat)
-        return new AV.Promise(function (resolve) {
-          let q1 = new AV.Query(Tag);
-          let category = AV.Object.createWithoutData('Category', cat.objectId);
-          //console.log('category',category)
-
-          //console.log('q1',q1)
-          //console.log('2');
-          q1.equalTo('category', category);
-
-          q1.equalTo('recipe', recipe);
-
-          q1.first().then(function (r1) {
-          console.log('r1',r1);
-            if(r1 === undefined){
-              let r1 = new AV.Query(Tag);
-              r1.equalTo('category', category);
-              r1.equalTo('recipe', recipe);
-            }
-            //   其余参数
-            r1.set('isCat', cat.isCat);
-            r1.set('qty', cat.qty);
-            r1.set('sort', cat.sort);
-            r1.save().then(()=>{
-              resolve(r1)
-            })
-          })
-        })
-      }
-
-      // 存储开始 显示圈
-      AV.Promise.all(arr.map((o) => {
-    console.log(o)
-        return updateTags(o)
-      })).then((r) => {
-        //   存储成功 关闭圈
-      })
-    })
-
-    //let recipe = values.objectId;
-
-
-
-
-
-}
   add = () => {
     console.log(this.props);
     this.uuid++;
@@ -348,54 +196,6 @@ class Editform extends React.Component {
       keys,
     });
   }
-  dragDecorator = (componentBackingInstance) => {
-  if (componentBackingInstance) {
-    let options = { };
-    Dragula([componentBackingInstance],{
-      removeOnSpill: true
-    }, options)
-        .on('over', function (e1) {
-      console.log('over',e1);
-    }).on('drop', function (e2,target) {
-      console.log('drop',e2.id);
-      //let keys = form.getFieldValue('keys');
-      console.log('drop',target);
-
-    }).on('over', function (e3, container,source) {
-
-
-    }).on('out', function (e4, container,source) {
-
-
-    });
-
-  }
-}
-//  dragula.on('drop', (el, target, source, sibling) => {
-//  const newColumnIndex = parseInt(get(target, 'id'));
-//  const previousColumnIndex = parseInt(get(source, 'id'));
-//  const belowId = get(sibling, 'id');
-//  const itemId = get(el, 'id');
-//
-//  let columns = this.state.columns;
-//  if (belowId === undefined) {
-//  const newItemIndex = columns[newColumnIndex].items.length;
-//  columns[previousColumnIndex].items.splice(columns[previousColumnIndex].items.indexOf(itemId), 1);
-//  columns[newColumnIndex].items.splice(newItemIndex, 0, itemId);
-//  this.setState({columns});
-//}
-//else {
-//  const newItemIndex = columns[newColumnIndex].items.indexOf(belowId);
-//  columns[previousColumnIndex].items.splice(columns[previousColumnIndex].items.indexOf(itemId), 1);
-//  columns[newColumnIndex].items.splice(newItemIndex, 0, itemId);
-//  this.setState({columns});
-//}
-//
-//if (this.props.onDrag !== undefined) {
-//  this.props.onDrag(columns);
-//}
-//})
-
 
   render() {
 
@@ -449,6 +249,7 @@ class Editform extends React.Component {
     });
 
 
+
     // var data = [{objectId:'54a224b3e4b0f1d1aea96f02',username:'hahahhah'}]
 
     // if (getFieldValue('cook.objectId')) {
@@ -460,19 +261,11 @@ class Editform extends React.Component {
     // 应为loading后才载入 去掉了判断
     // var data = [{objectId: getFieldValue('cook.objectId'), username: getFieldValue('cook.username')}]
 
+
     // console.log('默认值',data)
     const formItems = getFieldValue('keys').map((k) => {
       return (
-        //外面来一层拖拽组件
-          <div             id={k*100} >
-        <Form.Item {...formItemLayout}
-            label={`标签${k}：`}
-            key={k}
-            sortData="{k}"
-           data-id="{k}"
-            className="key"
-        >
-
+        <Form.Item {...formItemLayout} label={`标签${k}：`} key={k}>
           <ToolSelect {...this.props} k={k} data={this.state.tools}/>
           <Input
             placeholder="用量"
@@ -494,24 +287,10 @@ class Editform extends React.Component {
           </RadioGroup>
           <Button onClick={() => this.remove(k)}>删除</Button>
         </Form.Item>
-          </div>
-
-
       );
     });
-    //const SortableItem =getFieldValue('keys').map((k) =>{
-    //  console.log('kkkakak',k)
-    //  return (
-    //
-    //    <SortableContainer key={k} sortData="{k}">
-    //      <div>
-    //        {formItems}
-    //      </div>
-    //    </SortableContainer>
-    //  );
-    //});
     const form =
-      <div id="formWrapper"  >
+      <div id="formWrapper">
         <Form horizontal>
           <FormItem {...formItemLayout} label="标题：">
             <Input type="text" {...title} />
@@ -525,18 +304,14 @@ class Editform extends React.Component {
           <FormItem {...formItemLayout} label="作者：">
             <CookSelect {...this.props} data={this.state.cook}/>
           </FormItem>
-          <div ref={this.dragDecorator}>
           {formItems}
-            </div>
           <FormItem wrapperCol={{ span: 12, offset: 7 }}>
-            <Button onClick={this.add}  style={{ marginRight: 8 }}>新增好朋友</Button>
+            <Button onClick={this.add} style={{ marginRight: 8 }}>新增好朋友</Button>
             <Button type="primary" onClick={this.handleSubmit}>确定</Button>&nbsp;&nbsp;&nbsp;
             <Button type="ghost" onClick={this.handleReset}>重置</Button>
-            <Button  onClick={this.sort}>排序</Button>
           </FormItem>
         </Form>
       </div>
-
 
     const loading =
       <div>
@@ -551,4 +326,3 @@ class Editform extends React.Component {
 // 再包装一层
 let EditForm = Form.create()(Editform);
 export default EditForm;
-

@@ -18,10 +18,7 @@
     "leancloud-storage": "^1.5.1",
     "moment": "^2.15.2",
     "react": "^15.3.2",
-    "react-dnd": "^2.1.4",
-    "react-dnd-html5-backend": "^2.1.2",
     "react-dom": "^15.3.2",
-    "react-dragula": "^1.1.17",
     "react-router": "^2.4.0",
     "reflux": "^0.4.1",
     "whatwg-fetch": "^1.0.0"
@@ -45,7 +42,6 @@
     "less-loader": "^2.2.3",
     "moment": "^2.15.1",
     "open-browser-webpack-plugin": "0.0.2",
-    "react-anything-sortable": "^1.6.1",
     "style-loader": "~0.13.0",
     "url-loader": "^0.5.7",
     "webpack": "",
