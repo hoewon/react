@@ -111,11 +111,10 @@ class Editform extends React.Component {
       q1.include('user');
       console.log('id',id);
       q1.get(id).then((r1)=> {
-        console.log('r1',r1);
+        console.log('r11111',r1);
         var q2 = new AV.Query('Tag');
         q2.ascending('sort');
         q2.include('category');
-        console.log('r1',r1.id);
         q2.equalTo('recipe', r1);
         q2.find().then((r2)=> {
 
@@ -140,7 +139,9 @@ class Editform extends React.Component {
           //r1.set('sort', keys);
 
           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
-          // console.log('初始表单内容→→→→→', rz);
+           console.log('初始表单内容→→→→→', rz);
+          //把txt属性加入rz中，sort用的也是这种方式。
+        rz.txt= rz.desc.replace(/<br\/>/g,"\n");
           this.uuid = keys.length-1;
           this.props.form.setFieldsValue(rz);
           this.setState({
@@ -161,7 +162,7 @@ class Editform extends React.Component {
     e.preventDefault();
     this.props.form.validateFields((errors, values) => {
       var tools = u.s2n(values.tools);
-      // console.log(values);
+       console.log('values.desc',values.txt);
       if (!!errors) {
         message.error('表单中有错误，请检查');
         return;
@@ -176,8 +177,10 @@ class Editform extends React.Component {
       // console.log('提交结果',cook);
       q1.set('user', cook);
       q1.set('title', values.title);
-      q1.set('sn', values.sn);
-      q1.set('desc', values.desc);
+      q1.set('sn', parseInt(values.sn));
+      //正则匹配换行符\n 存储称<br/>
+      let text =values.txt.replace(/\n/g,"<br/>");
+      q1.set('desc',text );
       // title,sn,desc,image,video,
       q1.save().then((r1)=> {
         this.setState({visible: false});
@@ -259,25 +262,6 @@ class Editform extends React.Component {
                         });
             }
           })
-
-
-
-
-
-
-
-
-          //let tag = AV.Object.createWithoutData('Tag', r2[k].id);
-          //tag.destroy().then(
-          //      function (success) {
-          //         //删除成功
-          //console.log('删除成功')
-          //}, function (error) {
-          //   //删除失败
-          //console.log('失败')
-          //
-          //      });
-
         })
       })
 
@@ -492,10 +476,11 @@ class Editform extends React.Component {
       initialValue: u.time(date),
     });
 
-    const desc = getFieldProps('desc', {
+    const desc = getFieldProps('txt', {
       rules: [
         { required: true, max:1000, message: '必填，且小于1000个字符' }
       ]
+
     });
 
     const sn = getFieldProps('sn', {
@@ -573,7 +558,7 @@ class Editform extends React.Component {
             <Input type="text" {...title} />
           </FormItem>
           <FormItem {...formItemLayout} label="描述：">
-            <Input type="textarea" {...desc} />
+            <Input type="textarea"  {...desc} autosize={{ minRows: 2, maxRows: 6 }}/>
           </FormItem>
           <FormItem {...formItemLayout} label="序号：">
             <Input type="number" {...sn}/>
