@@ -141,7 +141,7 @@ class Editform extends React.Component {
 
           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
           // console.log('初始表单内容→→→→→', rz);
-          this.uuid = keys.length;
+          this.uuid = keys.length-1;
           this.props.form.setFieldsValue(rz);
           this.setState({
             visible: true,
@@ -225,15 +225,76 @@ class Editform extends React.Component {
 
   remove = (k) => {
     const {form} = this.props;
-
+    console.log('kkk',k);
     let keys = form.getFieldValue('keys');
     keys = keys.filter((key) => {
       return key !== k;
     });
+    //this.props.form.validateFields((errors, values) => {
+    //  var tools = u.s2n(values.tools);
+    //  console.log('values', values);
+    //  console.log('keys', keys);
+    //  console.log('tools', tools[0].objectId);
+      ////
+//        let q1 = new AV.Query(Tag);
+//        let category = AV.Object.createWithoutData('Category', tools[0].objectId);
+//      const id = this.props.id;
+//      //继承应该是大写，之前一直小写，取不出数据
+//      let recipe = AV.Object.createWithoutData('Recipe', id);
+//        q1.equalTo('category', category);
+//        q1.equalTo('recipe', recipe);
+//        q1.first().then(function (r1) {
+//          console.log('r1', r1);
+////  根据category和recipe的id 查询符合的Tag的唯一字段，获取id删除
+//          //Tag有三个id category recipe 本身
+//          let tag = AV.Object.createWithoutData('Tag', r1.id);
+//          tag.destroy().then(
+//                function (success) {
+//                   //删除成功
+//          console.log('删除成功')
+//          }, function (error) {
+//             //删除失败
+//          console.log('失败')
+//
+//                });
+//
+//        })})
+      const id = this.props.id;
+      var q1 = new AV.Query('Recipe');
+      q1.include('image');
+      q1.include('user');
+      q1.get(id).then((r1)=> {
+        var q2 = new AV.Query('Tag');
+        q2.include('category');
+        console.log('r1', r1.id);
+        q2.equalTo('recipe', r1);
+        q2.find().then((r2)=> {
+
+          console.log('r2', r2[k].id);
+          let tag = AV.Object.createWithoutData('Tag', r2[k].id);
+          tag.destroy().then(
+                function (success) {
+                   //删除成功
+          console.log('删除成功')
+          }, function (error) {
+             //删除失败
+          console.log('失败')
+
+                });
+
+        })
+      })
+
     // can use data-binding to set
     form.setFieldsValue({
       keys,
     });
+    //const key = number.text().trim().split('标签');
+    //console.log('bbbbb',key)
+    //const id = this.props.id;
+    ////继承应该是大写，之前一直小写，取不出数据
+    //let recipe = AV.Object.createWithoutData('Recipe', id);
+
   }
 
   sort=(e)=>{
@@ -248,6 +309,7 @@ class Editform extends React.Component {
         a[i-1]=(key[i]);
       }
     let c=[]
+    console.log('a',a)
     a.map((b)=>{
       console.log('b',b);
 
@@ -258,11 +320,12 @@ class Editform extends React.Component {
     const {form} = this.props;
     let keys = form.getFieldValue('keys');
     let tools= form.getFieldValue('tools');
-    form.setFieldsValue({
-      keys:c
-    });
 
-    //this.setState({keys:c})
+
+    this.setState({keys:c})
+    //form.setFieldsValue({
+    //  keys:c
+    //});
     this.props.form.validateFields((errors, values) =>{
       var tools = u.s2n(values.tools);
       console.log('values',values);
@@ -285,11 +348,12 @@ class Editform extends React.Component {
 
 
       const id = this.props.id;
-      let recipe = AV.Object.createWithoutData('recipe', id);
+      //继承应该是大写，之前一直小写，取不出数据
+      let recipe = AV.Object.createWithoutData('Recipe', id);
 
 
       function updateTags (cat){
-        console.log('cat',cat)
+
         return new AV.Promise(function (resolve) {
           let q1 = new AV.Query(Tag);
           let category = AV.Object.createWithoutData('Category', cat.objectId);
@@ -300,28 +364,48 @@ class Editform extends React.Component {
           q1.equalTo('category', category);
 
           q1.equalTo('recipe', recipe);
-
+          console.log('recipe',recipe);
           q1.first().then(function (r1) {
           console.log('r1',r1);
             if(r1 === undefined){
-              let r1 = new AV.Query(Tag);
-              r1.equalTo('category', category);
-              r1.equalTo('recipe', recipe);
+
+              // 新建对象
+              var r2 = new Tag();
+
+              console.log('r2');
+              r2.set('category', category);
+              r2.set('recipe', recipe);
+              console.log('aa',r2);
+              //   其余参数
+              console.log('cat',cat)
+              r2.set('isCat', cat.isCat);
+              r2.set('qty', cat.qty);
+              r2.set('sort', cat.sort);
+              r2.save().then(()=>{
+                resolve(r2)
+                console.log('a');
+              })
+            }else{
+
+              console.log('aa',r1);
+              //   其余参数
+              r1.set('category', category);
+              r1.set('recipe', recipe);
+              r1.set('isCat', cat.isCat);
+              r1.set('qty', cat.qty);
+              r1.set('sort', cat.sort);
+              r1.save().then(()=>{
+                resolve(r1)
+                console.log('a');
+              })
             }
-            //   其余参数
-            r1.set('isCat', cat.isCat);
-            r1.set('qty', cat.qty);
-            r1.set('sort', cat.sort);
-            r1.save().then(()=>{
-              resolve(r1)
-            })
+
           })
         })
       }
 
       // 存储开始 显示圈
       AV.Promise.all(arr.map((o) => {
-console.log(o.length)
         return updateTags(o)
       })).then((r) => {
         //   存储成功 关闭圈
@@ -371,30 +455,6 @@ console.log(o.length)
 
   }
 }
-//  dragula.on('drop', (el, target, source, sibling) => {
-//  const newColumnIndex = parseInt(get(target, 'id'));
-//  const previousColumnIndex = parseInt(get(source, 'id'));
-//  const belowId = get(sibling, 'id');
-//  const itemId = get(el, 'id');
-//
-//  let columns = this.state.columns;
-//  if (belowId === undefined) {
-//  const newItemIndex = columns[newColumnIndex].items.length;
-//  columns[previousColumnIndex].items.splice(columns[previousColumnIndex].items.indexOf(itemId), 1);
-//  columns[newColumnIndex].items.splice(newItemIndex, 0, itemId);
-//  this.setState({columns});
-//}
-//else {
-//  const newItemIndex = columns[newColumnIndex].items.indexOf(belowId);
-//  columns[previousColumnIndex].items.splice(columns[previousColumnIndex].items.indexOf(itemId), 1);
-//  columns[newColumnIndex].items.splice(newItemIndex, 0, itemId);
-//  this.setState({columns});
-//}
-//
-//if (this.props.onDrag !== undefined) {
-//  this.props.onDrag(columns);
-//}
-//})
 
 
   render() {
@@ -464,7 +524,7 @@ console.log(o.length)
     const formItems = getFieldValue('keys').map((k) => {
       return (
         //外面来一层拖拽组件
-          <div             id={k*100} >
+          <div             id={k} >
         <Form.Item {...formItemLayout}
             label={`标签${k}：`}
             key={k}
