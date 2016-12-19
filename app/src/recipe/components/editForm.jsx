@@ -230,35 +230,7 @@ class Editform extends React.Component {
     keys = keys.filter((key) => {
       return key !== k;
     });
-    //this.props.form.validateFields((errors, values) => {
-    //  var tools = u.s2n(values.tools);
-    //  console.log('values', values);
-    //  console.log('keys', keys);
-    //  console.log('tools', tools[0].objectId);
-      ////
-//        let q1 = new AV.Query(Tag);
-//        let category = AV.Object.createWithoutData('Category', tools[0].objectId);
-//      const id = this.props.id;
-//      //继承应该是大写，之前一直小写，取不出数据
-//      let recipe = AV.Object.createWithoutData('Recipe', id);
-//        q1.equalTo('category', category);
-//        q1.equalTo('recipe', recipe);
-//        q1.first().then(function (r1) {
-//          console.log('r1', r1);
-////  根据category和recipe的id 查询符合的Tag的唯一字段，获取id删除
-//          //Tag有三个id category recipe 本身
-//          let tag = AV.Object.createWithoutData('Tag', r1.id);
-//          tag.destroy().then(
-//                function (success) {
-//                   //删除成功
-//          console.log('删除成功')
-//          }, function (error) {
-//             //删除失败
-//          console.log('失败')
-//
-//                });
-//
-//        })})
+
       const id = this.props.id;
       var q1 = new AV.Query('Recipe');
       q1.include('image');
@@ -270,17 +242,41 @@ class Editform extends React.Component {
         q2.equalTo('recipe', r1);
         q2.find().then((r2)=> {
 
-          console.log('r2', r2[k].id);
-          let tag = AV.Object.createWithoutData('Tag', r2[k].id);
-          tag.destroy().then(
-                function (success) {
-                   //删除成功
-          console.log('删除成功')
-          }, function (error) {
-             //删除失败
-          console.log('失败')
+          console.log('r2', r2[0].attributes.sort);
 
-                });
+          let r3 = r2.map((o)=> {
+            console.log('o',o.attributes.sort);
+            if(k==o.attributes.sort){
+              let tag = AV.Object.createWithoutData('Tag', o.id);
+                  tag.destroy().then(
+                        function (success) {
+                           //删除成功
+                  alert('删除成功')
+                  }, function (error) {
+                     //删除失败
+                  alert('失败')
+
+                        });
+            }
+          })
+
+
+
+
+
+
+
+
+          //let tag = AV.Object.createWithoutData('Tag', r2[k].id);
+          //tag.destroy().then(
+          //      function (success) {
+          //         //删除成功
+          //console.log('删除成功')
+          //}, function (error) {
+          //   //删除失败
+          //console.log('失败')
+          //
+          //      });
 
         })
       })
