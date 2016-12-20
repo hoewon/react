@@ -1,5 +1,5 @@
 import React from 'react';
-import {Button, Checkbox, Select, Radio, Form, Row, Col, Icon, Input, InputNumber, message} from 'antd';
+import {Button,DatePicker, Checkbox, Select, Radio, Form, Row, Col, Icon, Input, InputNumber, message} from 'antd';
 
 const FormItem = Form.Item;
 const RadioGroup = Radio.Group;
@@ -9,6 +9,7 @@ import AV from 'leancloud-storage';
 const Recipe = AV.Object.extend('Recipe');
 const Tool = AV.Object.extend('Tool');
 const Tag = AV.Object.extend('Tag');
+const m = require('moment');
 
 import ToolSelect from './toolSelect.jsx';
 import CookSelect from './cookSelect.jsx';
@@ -82,7 +83,6 @@ function updateTool(r, c) {
 };
 
 
-
 class Editform extends React.Component {
   constructor(props) {
     super(props);
@@ -140,8 +140,14 @@ class Editform extends React.Component {
 
           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
            console.log('初始表单内容→→→→→', rz);
+
+          console.log(r1.attributes.publishedAt)
+
+
           //把txt属性加入rz中，sort用的也是这种方式。
         rz.txt= rz.desc.replace(/<br\/>/g,"\n");
+          rz.time= u.time(r1.attributes.publishedAt);
+          rz.sn=parseInt(rz.sn)
           this.uuid = keys.length-1;
           this.props.form.setFieldsValue(rz);
           this.setState({
@@ -156,13 +162,23 @@ class Editform extends React.Component {
       })
     }
   }
-
+//发布时间
+onChange=(value, dateString)=> {
+  console.log('Selected Time: ', value);
+  console.log('Formatted Selected Time: ', dateString);
+  const {form} = this.props;
+  // can use data-binding to get
+  let time = form.getFieldValue('time');
+  form.setFieldsValue({
+   time:u.time(value)
+  });
+}
   handleSubmit = (e) => {
     const id = this.props.id;
     e.preventDefault();
     this.props.form.validateFields((errors, values) => {
       var tools = u.s2n(values.tools);
-       console.log('values.desc',values.txt);
+       console.log('values.desc',values);
       if (!!errors) {
         message.error('表单中有错误，请检查');
         return;
@@ -175,6 +191,15 @@ class Editform extends React.Component {
       }
       var cook = AV.Object.createWithoutData('_User', values.cook.objectId);
       // console.log('提交结果',cook);
+      console.log('q1',q1);
+      //{"__type":"Date","iso":"2019-06-29T01:39:35.931Z"}
+      const times = m(values.time).toISOString();
+      console.log('times',times);
+      const published ={
+        "__type":"Date","iso":times
+      }
+
+      q1.set('publishedAt',published);
       q1.set('user', cook);
       q1.set('title', values.title);
       q1.set('sn', parseInt(values.sn));
@@ -277,7 +302,7 @@ class Editform extends React.Component {
 
   }
 
-  sort=(e)=>{
+  sort=()=>{
     const number = $('.key');
     console.log('key',number.text().trim());
     //replace
@@ -475,19 +500,21 @@ class Editform extends React.Component {
       ],
       initialValue: u.time(date),
     });
-
+    const time = getFieldProps('time');
     const desc = getFieldProps('txt', {
       rules: [
         { required: true, max:1000, message: '必填，且小于1000个字符' }
       ]
 
     });
-
-    const sn = getFieldProps('sn', {
-      rules: [
-        { required: true, min:4,max:4, message: '必填，4位数字' }
-      ]
-    });
+//const time = getFieldProps('publishedAt.iso');
+    const sn = getFieldProps('sn'
+    //    , {
+    //  rules: [
+    //    { required: true, min:4,max:4, message: '必填，4位数字' }
+    //  ]
+    //}
+    );
 
 
     // var data = [{objectId:'54a224b3e4b0f1d1aea96f02',username:'hahahhah'}]
@@ -518,11 +545,13 @@ class Editform extends React.Component {
           <Input
             placeholder="用量"
             style={{ width: 100 }}
-            {...getFieldProps(`tools.${k}.qty`,{
-              rules: [
-                { required: true, max:20, message: '必填，且小于20个字符' }
-              ]
-            })}/>
+            {...getFieldProps(`tools.${k}.qty`
+            //    ,{
+            //  rules: [
+            //    { required: true, max:20, message: '必填，且小于20个字符' }
+            //  ]
+            //}
+            )}/>
           <RadioGroup
             // name="status"
             {...getFieldProps(`tools.${k}.isCat`,{
@@ -557,6 +586,12 @@ class Editform extends React.Component {
           <FormItem {...formItemLayout} label="标题：">
             <Input type="text" {...title} />
           </FormItem>
+          <FormItem>
+          <DatePicker   showTime
+              {...time}
+
+                        onChange={this.onChange}/>
+            </FormItem>
           <FormItem {...formItemLayout} label="描述：">
             <Input type="textarea"  {...desc} autosize={{ minRows: 2, maxRows: 6 }}/>
           </FormItem>
