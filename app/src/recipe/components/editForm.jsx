@@ -141,7 +141,7 @@ class Editform extends React.Component {
           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
            console.log('初始表单内容→→→→→', rz);
 
-          console.log(r1.attributes.publishedAt)
+
 
 
           //把txt属性加入rz中，sort用的也是这种方式。
@@ -202,6 +202,8 @@ onChange=(value, dateString)=> {
       q1.set('publishedAt',published);
       q1.set('user', cook);
       q1.set('title', values.title);
+      q1.set('duration', values.duration);
+
       q1.set('sn', parseInt(values.sn));
       //正则匹配换行符\n 存储称<br/>
       let text =values.txt.replace(/\n/g,"<br/>");
@@ -414,6 +416,7 @@ onChange=(value, dateString)=> {
         return updateTags(o)
       })).then((r) => {
         //   存储成功 关闭圈
+        message.success('完成');
       })
     })
 
@@ -507,6 +510,7 @@ onChange=(value, dateString)=> {
       ]
 
     });
+    const duration=getFieldProps('duration');
 //const time = getFieldProps('publishedAt.iso');
     const sn = getFieldProps('sn'
     //    , {
@@ -586,7 +590,8 @@ onChange=(value, dateString)=> {
           <FormItem {...formItemLayout} label="标题：">
             <Input type="text" {...title} />
           </FormItem>
-          <FormItem>
+
+          <FormItem{...formItemLayout} label="发布时间：">
           <DatePicker   showTime
               {...time}
 
@@ -597,6 +602,9 @@ onChange=(value, dateString)=> {
           </FormItem>
           <FormItem {...formItemLayout} label="序号：">
             <Input type="number" {...sn}/>
+          </FormItem>
+          <FormItem {...formItemLayout} label="时长">
+            <Input type="text" {...duration} />
           </FormItem>
           <FormItem {...formItemLayout} label="作者：">
             <CookSelect {...this.props} data={this.state.cook}/>

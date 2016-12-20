@@ -37,7 +37,7 @@ class toolSelect extends React.Component {
 
 
   handleChange = (value)=> {
-    // console.log(value);
+     console.log(value);
 
     // this.setState({ value });
     // fetch(value, (data) => this.setState({ data }));

@@ -3,13 +3,13 @@ import AV from 'leancloud-storage';
 
 
 function searchCategory(text) {
-
+  console.log('text',text);
   return new AV.Promise(function (resolve){
-    // console.log(text);
 
     var q = new AV.Query('Category');
-    q.contains('title', text);
-    q.limit(5);
+    q.startsWith('title', text);
+    q.ascending('title');
+    q.limit(20);
     // q.equalTo('category', category);
     // 加入可被标签使用的限制
 
@@ -28,7 +28,8 @@ function searchCook(text) {
   return new AV.Promise(function (resolve){
     var q = new AV.Query('_User');
     q.contains('username', text);
-    q.limit(5);
+
+    q.limit(20);
     // 加入发布者资格的限制
 
     q.find().then(function(r1) {

@@ -8407,19 +8407,16 @@ webpackJsonp([0],[
 
 	          });
 	          var that = _this;
-	          setTimeout(function () {
-	            var _that$state = that.state,
-	                data = _that$state.data,
-	                pagination = _that$state.pagination;
-
-	            console.log('aaaassaasa', that.state.data);
-	            that.setState({
-
-	              data: data,
-	              pagination: pagination
-
-	            });
-	          }, 2000);
+	          //  setTimeout(function(){
+	          //  let {data, pagination}= that.state;
+	          //  console.log('asa',that.state.data);
+	          //    that.setState({
+	          //
+	          //      data:data,
+	          //      pagination
+	          //
+	          //    });
+	          //},2000)
 	        }).catch(function (e) {
 	          //批量操作的错误提示
 	          _message2.default.error(e.message);
@@ -78909,10 +78906,8 @@ webpackJsonp([0],[
 	    function EditPage(props) {
 	        _classCallCheck(this, EditPage);
 
-	        var _this = _possibleConstructorReturn(this, (EditPage.__proto__ || Object.getPrototypeOf(EditPage)).call(this, props));
-
-	        _this.state = {};
-	        return _this;
+	        return _possibleConstructorReturn(this, (EditPage.__proto__ || Object.getPrototypeOf(EditPage)).call(this, props));
+	        //this.state = {}
 	    }
 
 	    _createClass(EditPage, [{
@@ -78929,6 +78924,7 @@ webpackJsonp([0],[
 	            };
 
 	            var id = this.props.params.rowId;
+	            console.log('params', this.props.params);
 	            return _react2.default.createElement(
 	                'div',
 	                null,
@@ -79228,31 +79224,37 @@ webpackJsonp([0],[
 	  value: true
 	});
 
-	var _style6 = __webpack_require__(346);
+	var _style7 = __webpack_require__(603);
+
+	var _datePicker = __webpack_require__(607);
+
+	var _datePicker2 = _interopRequireDefault(_datePicker);
+
+	var _style8 = __webpack_require__(346);
 
 	var _button = __webpack_require__(451);
 
 	var _button2 = _interopRequireDefault(_button);
 
-	var _style7 = __webpack_require__(354);
+	var _style9 = __webpack_require__(354);
 
 	var _input = __webpack_require__(713);
 
 	var _input2 = _interopRequireDefault(_input);
 
-	var _style8 = __webpack_require__(537);
+	var _style10 = __webpack_require__(537);
 
 	var _message = __webpack_require__(539);
 
 	var _message2 = _interopRequireDefault(_message);
 
-	var _style9 = __webpack_require__(340);
+	var _style11 = __webpack_require__(340);
 
 	var _radio = __webpack_require__(378);
 
 	var _radio2 = _interopRequireDefault(_radio);
 
-	var _style10 = __webpack_require__(661);
+	var _style12 = __webpack_require__(661);
 
 	var _form = __webpack_require__(664);
 
@@ -79299,6 +79301,7 @@ webpackJsonp([0],[
 	var Recipe = _leancloudStorage2.default.Object.extend('Recipe');
 	var Tool = _leancloudStorage2.default.Object.extend('Tool');
 	var Tag = _leancloudStorage2.default.Object.extend('Tag');
+	var m = __webpack_require__(736);
 
 	var u = __webpack_require__(735);
 	//拖拽排序组件
@@ -79342,6 +79345,8 @@ webpackJsonp([0],[
 
 	function updateTool(r, c) {
 	  // r=recipe c=category
+
+
 	  return new _leancloudStorage2.default.Promise(function (resolve) {
 	    // 这个c必须存在 c.id .isCat .qty
 	    var category = _leancloudStorage2.default.Object.createWithoutData('Category', c.objectId);
@@ -79374,12 +79379,24 @@ webpackJsonp([0],[
 
 	    var _this = _possibleConstructorReturn(this, (Editform.__proto__ || Object.getPrototypeOf(Editform)).call(this, props));
 
+	    _this.onChange = function (value, dateString) {
+	      console.log('Selected Time: ', value);
+	      console.log('Formatted Selected Time: ', dateString);
+	      var form = _this.props.form;
+	      // can use data-binding to get
+
+	      var time = form.getFieldValue('time');
+	      form.setFieldsValue({
+	        time: u.time(value)
+	      });
+	    };
+
 	    _this.handleSubmit = function (e) {
 	      var id = _this.props.id;
 	      e.preventDefault();
 	      _this.props.form.validateFields(function (errors, values) {
 	        var tools = u.s2n(values.tools);
-	        // console.log(values);
+	        console.log('values.desc', values);
 	        if (!!errors) {
 	          _message2.default.error('表单中有错误，请检查');
 	          return;
@@ -79388,13 +79405,27 @@ webpackJsonp([0],[
 	          var q1 = new Recipe();
 	        } else {
 	          var q1 = _leancloudStorage2.default.Object.createWithoutData('Recipe', _this.props.id);
+	          //console.log('qqq',q1);
 	        }
 	        var cook = _leancloudStorage2.default.Object.createWithoutData('_User', values.cook.objectId);
 	        // console.log('提交结果',cook);
+	        console.log('q1', q1);
+	        //{"__type":"Date","iso":"2019-06-29T01:39:35.931Z"}
+	        var times = m(values.time).toISOString();
+	        console.log('times', times);
+	        var published = {
+	          "__type": "Date", "iso": times
+	        };
+
+	        q1.set('publishedAt', published);
 	        q1.set('user', cook);
 	        q1.set('title', values.title);
-	        q1.set('sn', values.sn);
-	        q1.set('desc', values.desc);
+	        q1.set('duration', values.duration);
+
+	        q1.set('sn', parseInt(values.sn));
+	        //正则匹配换行符\n 存储称<br/>
+	        var text = values.txt.replace(/\n/g, "<br/>");
+	        q1.set('desc', text);
 	        // title,sn,desc,image,video,
 	        q1.save().then(function (r1) {
 	          _this.setState({ visible: false });
@@ -79432,18 +79463,53 @@ webpackJsonp([0],[
 	    _this.remove = function (k) {
 	      var form = _this.props.form;
 
-
+	      console.log('kkk', k);
 	      var keys = form.getFieldValue('keys');
 	      keys = keys.filter(function (key) {
 	        return key !== k;
 	      });
+
+	      var id = _this.props.id;
+	      var q1 = new _leancloudStorage2.default.Query('Recipe');
+	      q1.include('image');
+	      q1.include('user');
+	      q1.get(id).then(function (r1) {
+	        var q2 = new _leancloudStorage2.default.Query('Tag');
+	        q2.include('category');
+	        console.log('r1', r1.id);
+	        q2.equalTo('recipe', r1);
+	        q2.find().then(function (r2) {
+
+	          console.log('r2', r2[0].attributes.sort);
+
+	          var r3 = r2.map(function (o) {
+	            console.log('o', o.attributes.sort);
+	            if (k == o.attributes.sort) {
+	              var tag = _leancloudStorage2.default.Object.createWithoutData('Tag', o.id);
+	              tag.destroy().then(function (success) {
+	                //删除成功
+	                alert('删除成功');
+	              }, function (error) {
+	                //删除失败
+	                alert('失败');
+	              });
+	            }
+	          });
+	        });
+	      });
+
 	      // can use data-binding to set
 	      form.setFieldsValue({
 	        keys: keys
 	      });
+	      //const key = number.text().trim().split('标签');
+	      //console.log('bbbbb',key)
+	      //const id = this.props.id;
+	      ////继承应该是大写，之前一直小写，取不出数据
+	      //let recipe = AV.Object.createWithoutData('Recipe', id);
 	    };
 
-	    _this.sort = function (e) {
+	    _this.sort = function () {
 	      var number = $('.key');
 	      console.log('key', number.text().trim());
 	      //replace
@@ -79452,9 +79518,10 @@ webpackJsonp([0],[
 	      var a = [];
 	      for (var i = 1; i < key.length; i++) {
 
-	        a[i - 1] = key[i][0];
+	        a[i - 1] = key[i];
 	      }
 	      var c = [];
+	      console.log('a', a);
 	      a.map(function (b) {
 	        console.log('b', b);
 
@@ -79465,18 +79532,96 @@ webpackJsonp([0],[
 
 	      var keys = form.getFieldValue('keys');
 	      var tools = form.getFieldValue('tools');
-	      console.log('tools', tools);
-	      form.setFieldsValue({
-	        keys: c
-	      });
+
 	      _this.setState({ keys: c });
+	      //form.setFieldsValue({
+	      //  keys:c
+	      //});
 	      _this.props.form.validateFields(function (errors, values) {
 	        var tools = u.s2n(values.tools);
+	        console.log('values', values);
 	        console.log('keys', keys);
-	        console.log('ke', values);
+	        console.log('tools', tools);
 
-	        console.log(keys);
+	        console.log('c', c);
+	        //结果
+	        var arr = [];
+	        for (var _i = 0; _i <= c.length - 1; _i++) {
+	          var _a = tools[c[_i]];
+	          _a.sort = _i;
+	          //let b = Object.assign(a,sort)
+	          console.log('a', _a);
+
+	          arr.push(_a);
+	        }
+	        console.log('arr', arr);
+
+	        var id = _this.props.id;
+	        //继承应该是大写，之前一直小写，取不出数据
+	        var recipe = _leancloudStorage2.default.Object.createWithoutData('Recipe', id);
+
+	        function updateTags(cat) {
+
+	          return new _leancloudStorage2.default.Promise(function (resolve) {
+	            var q1 = new _leancloudStorage2.default.Query(Tag);
+	            var category = _leancloudStorage2.default.Object.createWithoutData('Category', cat.objectId);
+	            //console.log('category',category)
+
+	            //console.log('q1',q1)
+	            //console.log('2');
+	            q1.equalTo('category', category);
+
+	            q1.equalTo('recipe', recipe);
+	            console.log('recipe', recipe);
+	            q1.first().then(function (r1) {
+	              console.log('r1', r1);
+	              if (r1 === undefined) {
+
+	                // 新建对象
+	                var r2 = new Tag();
+
+	                console.log('r2');
+	                r2.set('category', category);
+	                r2.set('recipe', recipe);
+	                console.log('aa', r2);
+	                //   其余参数
+	                console.log('cat', cat);
+	                r2.set('isCat', cat.isCat);
+	                r2.set('qty', cat.qty);
+	                r2.set('sort', cat.sort);
+	                r2.save().then(function () {
+	                  resolve(r2);
+	                  console.log('a');
+	                });
+	              } else {
+
+	                console.log('aa', r1);
+	                //   其余参数
+	                r1.set('category', category);
+	                r1.set('recipe', recipe);
+	                r1.set('isCat', cat.isCat);
+	                r1.set('qty', cat.qty);
+	                r1.set('sort', cat.sort);
+	                r1.save().then(function () {
+	                  resolve(r1);
+	                  console.log('a');
+	                });
+	              }
+	            });
+	          });
+	        }
+
+	        // 存储开始 显示圈
+	        _leancloudStorage2.default.Promise.all(arr.map(function (o) {
+	          return updateTags(o);
+	        })).then(function (r) {
+	          //   存储成功 关闭圈
+	          _message2.default.success('完成');
+	        });
 	      });
+
+	      //let recipe = values.objectId;
+
 	    };
 
 	    _this.add = function () {
@@ -79534,12 +79679,20 @@ webpackJsonp([0],[
 	        var q1 = new _leancloudStorage2.default.Query('Recipe');
 	        q1.include('image');
 	        q1.include('user');
+	        console.log('id', id);
 	        q1.get(id).then(function (r1) {
-	          var q2 = new _leancloudStorage2.default.Query('Tool');
+	          console.log('r11111', r1);
+	          var q2 = new _leancloudStorage2.default.Query('Tag');
+	          q2.ascending('sort');
 	          q2.include('category');
 	          q2.equalTo('recipe', r1);
 	          q2.find().then(function (r2) {
+
+	            //let r4=JSON.parse(JSON.stringify(r2))
+	            // console.log('r4',r4)
+	            console.log('r2', r2);
 	            var r3 = r2.map(function (o) {
+	              console.log('o', o);
 	              return {
 	                objectId: o.get('category').id,
 	                title: o.get('category').get('title'),
@@ -79553,10 +79706,16 @@ webpackJsonp([0],[
 	            r1.set('tools', u.n2s(r3));
 	            r1.set('cook', r1.get('user').toJSON());
 	            r1.set('keys', keys);
+	            //r1.set('sort', keys);
 
 	            var rz = u.n2s(JSON.parse(JSON.stringify(r1)));
-	            // console.log('初始表单内容→→→→→', rz);
-	            _this2.uuid = keys.length;
+	            console.log('初始表单内容→→→→→', rz);
+
+	            //把txt属性加入rz中，sort用的也是这种方式。
+	            rz.txt = rz.desc.replace(/<br\/>/g, "\n");
+	            rz.time = u.time(r1.attributes.publishedAt);
+	            rz.sn = parseInt(rz.sn);
+	            _this2.uuid = keys.length - 1;
 	            _this2.props.form.setFieldsValue(rz);
 	            _this2.setState({
 	              visible: true,
@@ -79570,6 +79729,8 @@ webpackJsonp([0],[
 	        });
 	      }
 	    }
+	    //发布时间
+
 	    // 重置事件
 
 	    // 校验ID函数
@@ -79584,33 +79745,6 @@ webpackJsonp([0],[
 
 	  }, {
 	    key: 'render',
-
-	    //  dragula.on('drop', (el, target, source, sibling) => {
-	    //  const newColumnIndex = parseInt(get(target, 'id'));
-	    //  const previousColumnIndex = parseInt(get(source, 'id'));
-	    //  const belowId = get(sibling, 'id');
-	    //  const itemId = get(el, 'id');
-	    //
-	    //  let columns = this.state.columns;
-	    //  if (belowId === undefined) {
-	    //  const newItemIndex = columns[newColumnIndex].items.length;
-	    //  columns[previousColumnIndex].items.splice(columns[previousColumnIndex].items.indexOf(itemId), 1);
-	    //  columns[newColumnIndex].items.splice(newItemIndex, 0, itemId);
-	    //  this.setState({columns});
-	    //}
-	    //else {
-	    //  const newItemIndex = columns[newColumnIndex].items.indexOf(belowId);
-	    //  columns[previousColumnIndex].items.splice(columns[previousColumnIndex].items.indexOf(itemId), 1);
-	    //  columns[newColumnIndex].items.splice(newItemIndex, 0, itemId);
-	    //  this.setState({columns});
-	    //}
-	    //
-	    //if (this.props.onDrag !== undefined) {
-	    //  this.props.onDrag(columns);
-	    //}
-	    //})
-
-
 	    value: function render() {
 	      var _this3 = this;
 
@@ -79652,14 +79786,20 @@ webpackJsonp([0],[
 	        rules: [{ required: true, max: 120, message: '必填，且小于120个字符' }],
 	        initialValue: u.time(date)
 	      });
-
-	      var desc = getFieldProps('desc', {
+	      var time = getFieldProps('time');
+	      var desc = getFieldProps('txt', {
 	        rules: [{ required: true, max: 1000, message: '必填，且小于1000个字符' }]
-	      });
 
-	      var sn = getFieldProps('sn', {
-	        rules: [{ required: true, min: 4, max: 4, message: '必填，4位数字' }]
 	      });
+	      var duration = getFieldProps('duration');
+	      //const time = getFieldProps('publishedAt.iso');
+	      var sn = getFieldProps('sn'
+	      //    , {
+	      //  rules: [
+	      //    { required: true, min:4,max:4, message: '必填，4位数字' }
+	      //  ]
+	      //}
+	      );
 
 	      // var data = [{objectId:'54a224b3e4b0f1d1aea96f02',username:'hahahhah'}]
 
@@ -79678,7 +79818,7 @@ webpackJsonp([0],[
 	          //外面来一层拖拽组件
 	          _react2.default.createElement(
 	            'div',
-	            { id: k * 100 },
+	            { id: k },
 	            _react2.default.createElement(
 	              _form2.default.Item,
 	              _extends({}, formItemLayout, {
@@ -79692,9 +79832,13 @@ webpackJsonp([0],[
 	              _react2.default.createElement(_input2.default, _extends({
 	                placeholder: '\u7528\u91CF',
 	                style: { width: 100 }
-	              }, getFieldProps('tools.' + k + '.qty', {
-	                rules: [{ required: true, max: 20, message: '必填，且小于20个字符' }]
-	              }))),
+	              }, getFieldProps('tools.' + k + '.qty'
+	              //    ,{
+	              //  rules: [
+	              //    { required: true, max:20, message: '必填，且小于20个字符' }
+	              //  ]
+	              //}
+	              ))),
 	              _react2.default.createElement(
 	                RadioGroup
 	                // name="status"
@@ -79750,8 +79894,16 @@ webpackJsonp([0],[
 	          ),
 	          _react2.default.createElement(
 	            FormItem,
+	            _extends({}, formItemLayout, { label: '\u53D1\u5E03\u65F6\u95F4\uFF1A' }),
+	            _react2.default.createElement(_datePicker2.default, _extends({ showTime: true
+	            }, time, {
+
+	              onChange: this.onChange }))
+	          ),
+	          _react2.default.createElement(
+	            FormItem,
 	            _extends({}, formItemLayout, { label: '\u63CF\u8FF0\uFF1A' }),
-	            _react2.default.createElement(_input2.default, _extends({ type: 'textarea' }, desc))
+	            _react2.default.createElement(_input2.default, _extends({ type: 'textarea' }, desc, { autosize: { minRows: 2, maxRows: 6 } }))
 	          ),
 	          _react2.default.createElement(
 	            FormItem,
@@ -79760,10 +79912,19 @@ webpackJsonp([0],[
 	          ),
 	          _react2.default.createElement(
 	            FormItem,
+	            _extends({}, formItemLayout, { label: '\u65F6\u957F' }),
+	            _react2.default.createElement(_input2.default, _extends({ type: 'text' }, duration))
+	          ),
+	          _react2.default.createElement(
+	            FormItem,
 	            _extends({}, formItemLayout, { label: '\u4F5C\u8005\uFF1A' }),
 	            _react2.default.createElement(_cookSelect2.default, _extends({}, this.props, { data: this.state.cook }))
 	          ),
-	          formItems,
+	          _react2.default.createElement(
+	            'div',
+	            { ref: this.dragDecorator },
+	            formItems
+	          ),
 	          _react2.default.createElement(
 	            FormItem,
 	            { wrapperCol: { span: 12, offset: 7 } },
@@ -79881,7 +80042,7 @@ webpackJsonp([0],[
 	    var _this = _possibleConstructorReturn(this, (toolSelect.__proto__ || Object.getPrototypeOf(toolSelect)).call(this, props));
 
 	    _this.handleChange = function (value) {
-	      // console.log(value);
+	      console.log(value);
 
 	      // this.setState({ value });
 	      // fetch(value, (data) => this.setState({ data }));
@@ -79999,13 +80160,13 @@ webpackJsonp([0],[
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function searchCategory(text) {
-
+	  console.log('text', text);
 	  return new _leancloudStorage2.default.Promise(function (resolve) {
-	    // console.log(text);
 
 	    var q = new _leancloudStorage2.default.Query('Category');
-	    q.contains('title', text);
-	    q.limit(5);
+	    q.startsWith('title', text);
+	    q.ascending('title');
+	    q.limit(20);
 	    // q.equalTo('category', category);
 	    // 加入可被标签使用的限制
 
@@ -80024,7 +80185,8 @@ webpackJsonp([0],[
 	  return new _leancloudStorage2.default.Promise(function (resolve) {
 	    var q = new _leancloudStorage2.default.Query('_User');
 	    q.contains('username', text);
-	    q.limit(5);
+
+	    q.limit(20);
 	    // 加入发布者资格的限制
 
 	    q.find().then(function (r1) {
