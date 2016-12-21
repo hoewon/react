@@ -1,5 +1,6 @@
 import React from 'react';
-import {Table, Icon, Tooltip, Button, message} from 'antd';
+import {Table, Icon,Form, Tooltip, Input ,Button, message} from 'antd';
+const FormItem = Form.Item;
 
 // 引入标准Fetch及IE兼容依赖
 import 'whatwg-fetch';
@@ -40,7 +41,12 @@ export default class Antdes extends React.Component {
   displayAlert = () => {
     console.log('blablabla')
   }
-
+  handleSubmit=(e)=>{
+    e.preventDefault();
+   this.props.form.validateFields((errors, values) => {
+      //var tools = u.s2n(values.tools);
+      console.log('values.desc',values);})
+  }
   // 获取表格数据
   fetch = (params) => {
 
@@ -55,13 +61,15 @@ export default class Antdes extends React.Component {
       }else{
         q.ascending(params.sortField);
       }
-
+console.log('q',q)
       q.find().then((r2)=> {
+        console.log('r2',r2);
         r2.map((i)=> {
           i.updatedAt = u.time(i.updatedAt, 'now');
           i.createdAt = u.time(i.createdAt);
         })
         let r3 = JSON.parse(JSON.stringify(r2));
+        console.log('r3',r3);
         let pagination = this.state.pagination;
         pagination.total = count;
 
@@ -104,7 +112,10 @@ export default class Antdes extends React.Component {
   }
 
   render() {
-
+    const formItemLayout = {
+      labelCol: {span: 6},
+      wrapperCol: {span: 10},
+    };
     let { sortedInfo } = this.state;
     sortedInfo = sortedInfo || {};
     /*定义表格列*/
@@ -144,7 +155,14 @@ export default class Antdes extends React.Component {
     return (
       <div id="wrap">
         <Title titleName="标签" onMouseOver={this.displayAlert}/>
-        <Button onClick={this.reload}>查询</Button>
+        <Form inline onSubmit={this.handleSubmit}>
+        <FormItem>
+          <Input/>
+        </FormItem>
+        <FormItem>
+          <Button type="primary" htmlType="submit">查询</Button>
+        </FormItem>
+      </Form>
         <Header />
         <div id="table">
           <Table

@@ -7,7 +7,7 @@ const RadioButton = Radio.Button;
 
 import AV from 'leancloud-storage';
 const Recipe = AV.Object.extend('Recipe');
-const Tool = AV.Object.extend('Tool');
+//const Tool = AV.Object.extend('Tool');
 const Tag = AV.Object.extend('Tag');
 const m = require('moment');
 
@@ -54,33 +54,33 @@ import Dragula from 'react-dragula';
 //
 import './editForm.less';
 
-function updateTool(r, c) {
-  // r=recipe c=category
-
-
-  return new AV.Promise(function (resolve) {
-    // 这个c必须存在 c.id .isCat .qty
-    var category = AV.Object.createWithoutData('Category', c.objectId);
-    // 用r跟c取值，如果存在，则更新，如果不存在，则新建
-    var q1 = new AV.Query('Tool');
-    q1.equalTo('recipe', r);
-    q1.equalTo('category', category);
-    q1.first().then(function (r1) {
-      if (r1 === undefined) {
-        var q2 = new Tool();
-        q2.set('recipe', r);
-        q2.set('category', category);
-      } else {
-        var q2 = r1;
-      }
-      q2.set('isCat', c.isCat);
-      q2.set('qty', c.qty);
-      q2.save().then((r2)=> {
-        resolve(r2);
-      });
-    });
-  })
-};
+//function updateTool(r, c) {
+//  // r=recipe c=category
+//
+//
+//  return new AV.Promise(function (resolve) {
+//    // 这个c必须存在 c.id .isCat .qty
+//    var category = AV.Object.createWithoutData('Category', c.objectId);
+//    // 用r跟c取值，如果存在，则更新，如果不存在，则新建
+//    var q1 = new AV.Query('Tag');
+//    q1.equalTo('recipe', r);
+//    q1.equalTo('category', category);
+//    q1.first().then(function (r1) {
+//      if (r1 === undefined) {
+//        var q2 = new Tool();
+//        q2.set('recipe', r);
+//        q2.set('category', category);
+//      } else {
+//        var q2 = r1;
+//      }
+//      q2.set('isCat', c.isCat);
+//      q2.set('qty', c.qty);
+//      q2.save().then((r2)=> {
+//        resolve(r2);
+//      });
+//    });
+//  })
+//};
 
 
 class Editform extends React.Component {
@@ -201,6 +201,7 @@ onChange=(value, dateString)=> {
 
       q1.set('publishedAt',published);
       q1.set('user', cook);
+      console.log('title',values.title)
       q1.set('title', values.title);
       q1.set('duration', values.duration);
 
@@ -209,34 +210,37 @@ onChange=(value, dateString)=> {
       let text =values.txt.replace(/\n/g,"<br/>");
       q1.set('desc',text );
       // title,sn,desc,image,video,
-      q1.save().then((r1)=> {
+      q1.save().then(()=> {
         this.setState({visible: false});
-        AV.Promise.all(
-          Object.keys(tools).map((k)=> {
-            return updateTool(r1, tools[k])
-          })
-        ).then((r2)=> {
-          var r21 = r2.map((o)=> {
-            return o.id
+      //  AV.Promise.all(
+      //    Object.keys(tools).map((k)=> {
+      //      //return updateTool(r1, tools[k])
+      //    })
+      //  ).then((r2)=> {
+      //    console.log('r2',r2)
+      //    var r21 = r2.map((o)=> {
+      //      return o.id
           });
-          let title = r1.attributes.title;
+
+          //let title = r1.attributes.title;
+
           if (id === 'add') {
-            message.success('上传【' + title + '】完成');
+            //message.success('上传【' + title + '】完成');
           } else {
-            var q3 = new AV.Query('Tool');
-            q3.equalTo('recipe', q1);
-            q3.notContainedIn('objectId', r21);
-            q3.find().then(function (rz) {
-              AV.Object.destroyAll(rz);
+            //var q3 = new AV.Query('Tag');
+            //q3.equalTo('recipe', q1);
+            //q3.notContainedIn('objectId', r21);
+            //q3.find().then(function (rz) {
+            //  AV.Object.destroyAll(rz);
               // console.log('排除后的结果',o)
-              message.success('【' + title + '】已更新');
-            })
+              message.success('【' +values.title + '】已更新');
+            //})
           }
         });
-      }).catch((e)=> {
-        message.error(e.message);
-      })
-    });
+      //}).catch((e)=> {
+      //  message.error(e.message);
+      //})
+    //});
   }
   // 重置事件
   handleReset = (e) => {

@@ -9,7 +9,7 @@
   },
   "dependencies": {
     "animate.css": "^3.5.1",
-    "antd": "^1.0.1",
+    "antd": "^1.11.4",
     "assign-deep": "^0.4.5",
     "babel-runtime": "^6.11.6",
     "console-polyfill": "^0.2.2",

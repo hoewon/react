@@ -10,7 +10,7 @@ const RadioButton = Radio.Button;
 
 import AV from 'leancloud-storage';
 const Recipe = AV.Object.extend('Recipe');
-const Tool = AV.Object.extend('Tool');
+//const Tool = AV.Object.extend('Tool');
 
 
 const u = require('../../utils/utils');
