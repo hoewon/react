@@ -18,69 +18,9 @@ const u = require('../../utils/utils');
 //拖拽排序组件
 //import React from 'react';
 import Dragula from 'react-dragula';
-//import '../../../../node_modules/dragula/dragula'
 
-//
-//
-//
-//import HTML5Backend from 'react-dnd-html5-backend';
-//import { DragDropContext } from 'react-dnd';
-////把应用的根组件包装在 DragDropContext 中
-//export default DragDropContext(HTML5Backend)(form);
-///*---------------------------*/
-//// 2把可以拖拽的组件包装在 DragSource 中
-////设置 type
-////设置 spec，让组件可以响应拖拽事件
-////设置 collect，把拖拽过程中需要信息注入组件的 props
-//import { DragSource } from 'react-dnd';
-//// 唯一
-//const type ='aaa';
-////响应拖拽事件
-//const spec={}
-//
-//
-//;
-////返回object注入props
-//function collect(connect, monitor) { ... }
-//export default DragSource(type, spec, collect)(formItems);
-///*---------------------------*/
-//// 3把可以接受拖拽的组件包装在 DropTarget 中
-////设置 type
-////设置 spec，让组件可以响应拖拽事件
-////设置 collect，把拖拽过程中需要信息注入组件的 props
-//import { DropTarget } from 'react-dnd';
-//
-//export default DropTarget(types, spec, collect)(formItems);
-//
 import './editForm.less';
 
-//function updateTool(r, c) {
-//  // r=recipe c=category
-//
-//
-//  return new AV.Promise(function (resolve) {
-//    // 这个c必须存在 c.id .isCat .qty
-//    var category = AV.Object.createWithoutData('Category', c.objectId);
-//    // 用r跟c取值，如果存在，则更新，如果不存在，则新建
-//    var q1 = new AV.Query('Tag');
-//    q1.equalTo('recipe', r);
-//    q1.equalTo('category', category);
-//    q1.first().then(function (r1) {
-//      if (r1 === undefined) {
-//        var q2 = new Tool();
-//        q2.set('recipe', r);
-//        q2.set('category', category);
-//      } else {
-//        var q2 = r1;
-//      }
-//      q2.set('isCat', c.isCat);
-//      q2.set('qty', c.qty);
-//      q2.save().then((r2)=> {
-//        resolve(r2);
-//      });
-//    });
-//  })
-//};
 
 
 class Editform extends React.Component {
@@ -109,9 +49,12 @@ class Editform extends React.Component {
       var q1 = new AV.Query('Recipe');
       q1.include('image');
       q1.include('user');
-      console.log('id',id);
+      console.log('id',q1);
       q1.get(id).then((r1)=> {
         console.log('r11111',r1);
+        //if(!r1.attributes.user){
+        //  r1.attributes.user='aa'
+        //}
         var q2 = new AV.Query('Tag');
         q2.ascending('sort');
         q2.include('category');
@@ -130,32 +73,76 @@ class Editform extends React.Component {
               qty: o.get('qty')
             }
           })
-          let cook = [{objectId: r1.get('user').id, username: r1.get('user').get('username')}]
-          let keys = Array.apply(null, {length: r3.length}).map(Function.call, Number);
+         if(r1.attributes.user) {
 
-          r1.set('tools', u.n2s(r3));
-          r1.set('cook', r1.get('user').toJSON());
-          r1.set('keys', keys);
-          //r1.set('sort', keys);
+          // console.log('空')
+           //rz.cook.createdAt="2016-12-06T06:53:40.432Z"
+           //rz.cook.dishCount= 0
+           //rz.cook.emailVerified=false
+           //rz.cook.mobilePhoneVerified=false
+           //rz.cook.objectId="58466074a22b9d006c302e99"
+           //rz.cook.uid=74
+           //rz.cook.updatedAt= "2016-12-06T06:53:40.464Z"
+           //rz.cook.username="Rosie's Dessert Spot"
+           //rz.cooked= 0
+           let cook = [{objectId: r1.get('user').id, username: r1.get('user').get('username')}]
+           let keys = Array.apply(null, {length: r3.length}).map(Function.call, Number);
 
-          let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
+           r1.set('tools', u.n2s(r3));
+           r1.set('cook', r1.get('user').toJSON());
+           r1.set('keys', keys);
+
+           //r1.set('sort', keys);
+
+           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
+
+
            console.log('初始表单内容→→→→→', rz);
 
 
+           //把txt属性加入rz中，sort用的也是这种方式。
+           rz.txt = rz.desc.replace(/<br\/>/g, "\n");
+           rz.time = u.time(r1.attributes.publishedAt);
+           rz.sn = parseInt(rz.sn)
+           this.uuid = keys.length - 1;
+           this.props.form.setFieldsValue(rz);
+           this.setState({
+             visible: true,
+             loading: false,
+             tools: r3,
+             cook: cook
+           });
+         }else{
+            console.log('空')
+
+           //let cook = [{objectId: r1.get('user').id, username: r1.get('user').get('username')}]
+           let keys = Array.apply(null, {length: r3.length}).map(Function.call, Number);
+
+           r1.set('tools', u.n2s(r3));
+           //r1.set('cook', r1.get('user').toJSON());
+           r1.set('keys', keys);
 
 
-          //把txt属性加入rz中，sort用的也是这种方式。
-        rz.txt= rz.desc.replace(/<br\/>/g,"\n");
-          rz.time= u.time(r1.attributes.publishedAt);
-          rz.sn=parseInt(rz.sn)
-          this.uuid = keys.length-1;
-          this.props.form.setFieldsValue(rz);
-          this.setState({
-            visible: true,
-            loading: false,
-            tools: r3,
-            cook: cook
-          });
+
+           let rz = u.n2s(JSON.parse(JSON.stringify(r1)));
+
+
+           console.log('初始表单内容→→→→→', rz);
+
+
+           //把txt属性加入rz中，sort用的也是这种方式。
+           rz.txt = rz.desc.replace(/<br\/>/g, "\n");
+           rz.time = u.time(r1.attributes.publishedAt);
+           rz.sn = parseInt(rz.sn)
+           this.uuid = keys.length - 1;
+           this.props.form.setFieldsValue(rz);
+           this.setState({
+             visible: true,
+             loading: false,
+             tools: r3,
+             //cook: cook
+           });
+         }
         })
       }).catch((e)=> {
         message.error(e.message);
@@ -210,32 +197,23 @@ onChange=(value, dateString)=> {
       let text =values.txt.replace(/\n/g,"<br/>");
       q1.set('desc',text );
       // title,sn,desc,image,video,
-      q1.save().then(()=> {
+      // 确定提示
+      q1.save().then((o)=> {
         this.setState({visible: false});
-      //  AV.Promise.all(
-      //    Object.keys(tools).map((k)=> {
-      //      //return updateTool(r1, tools[k])
-      //    })
-      //  ).then((r2)=> {
-      //    console.log('r2',r2)
-      //    var r21 = r2.map((o)=> {
-      //      return o.id
+      console.log('保存',o);
+
+        AV.Cloud.run('flush', {sort:'recipe',term:o.id},{remote: true}).then(list=>{
+          console.log('保存l',list);
+          if(list){
+            message.success('【' +values.title + '】已更新');
+          }else{
+            message.success('重建缓存失败')
+          }
+        })
+
           });
 
-          //let title = r1.attributes.title;
 
-          if (id === 'add') {
-            //message.success('上传【' + title + '】完成');
-          } else {
-            //var q3 = new AV.Query('Tag');
-            //q3.equalTo('recipe', q1);
-            //q3.notContainedIn('objectId', r21);
-            //q3.find().then(function (rz) {
-            //  AV.Object.destroyAll(rz);
-              // console.log('排除后的结果',o)
-              message.success('【' +values.title + '】已更新');
-            //})
-          }
         });
       //}).catch((e)=> {
       //  message.error(e.message);
@@ -300,14 +278,9 @@ onChange=(value, dateString)=> {
     form.setFieldsValue({
       keys,
     });
-    //const key = number.text().trim().split('标签');
-    //console.log('bbbbb',key)
-    //const id = this.props.id;
-    ////继承应该是大写，之前一直小写，取不出数据
-    //let recipe = AV.Object.createWithoutData('Recipe', id);
 
   }
-
+//排序
   sort=()=>{
     const number = $('.key');
     console.log('key',number.text().trim());
@@ -327,11 +300,11 @@ onChange=(value, dateString)=> {
       c.push(parseInt(b));
 
     })
-
+//取值
     const {form} = this.props;
     let keys = form.getFieldValue('keys');
     let tools= form.getFieldValue('tools');
-
+//赋值
 
     this.setState({keys:c})
     //form.setFieldsValue({
@@ -339,11 +312,7 @@ onChange=(value, dateString)=> {
     //});
     this.props.form.validateFields((errors, values) =>{
       var tools = u.s2n(values.tools);
-      console.log('values',values);
-      console.log('keys',keys);
-      console.log('tools',tools);
 
-      console.log('c',c);
       //结果
       let arr=[];
       for(let i=0;i<=c.length-1;i++){
@@ -352,14 +321,13 @@ onChange=(value, dateString)=> {
        //let b = Object.assign(a,sort)
     console.log('a',a);
 
-
         arr.push(a);
       }
+      //顺序数组
       console.log('arr',arr);
 
 
       const id = this.props.id;
-      //继承应该是大写，之前一直小写，取不出数据
       let recipe = AV.Object.createWithoutData('Recipe', id);
 
 
