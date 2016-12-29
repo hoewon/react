@@ -117,7 +117,7 @@ export default class Antdes extends React.Component {
             console.log('i',i);
             let r4 = JSON.parse(JSON.stringify(o));
             console.log('r4',r4[0]);
-
+          //给空数据一个空值
             if(r4[0]==undefined){
               console.log('空')
               r4[0]={
@@ -211,7 +211,6 @@ export default class Antdes extends React.Component {
   }
   //function
   handleTableChange = (pagination, filters, sorter) =>{
-
     this.setState({
       filteredInfo: filters,
       sortedInfo: {
@@ -233,6 +232,16 @@ export default class Antdes extends React.Component {
       sortOrder: sorter.order,
       ...filters,
     });
+  }
+  button=(k)=>{
+    console.log('button',k)
+    AV.Cloud.run('flush', {type:'recipe',term:k.uid}, {remote: true})
+        .then((o)=> {
+
+        }).catch((err) => {
+      console.log(err);
+    });
+
   }
 
   render() {
@@ -328,6 +337,13 @@ export default class Antdes extends React.Component {
               <i className="fa fa-pencil"/></Link>
             </Tooltip>
         )
+      },{
+        width: '5%',
+        title: 'button',
+        dataIndex: 'button',
+        render: (t, r, i) => (
+           <Button title="button"  onClick={() => this.button(r)}>button</Button>
+        )
       }];
 
     return (
@@ -346,6 +362,7 @@ export default class Antdes extends React.Component {
                 pagination={this.state.pagination}
                 loading={this.state.loading}
                 onChange={this.handleTableChange}
+
             />
 
           </div>
